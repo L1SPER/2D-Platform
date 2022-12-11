@@ -6,23 +6,27 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float movingSpeed;
-    [SerializeField] float jumpingForce;
-    private bool doubleJump;
-    
-    private float horizontalInput;
+    private float _horizontalInput;
+    private float _movingSpeed=7.5f;
+    private float _jumpingForce=5f;
 
-    private BoxCollider2D boxCollider;
-    float isGroundedRayLength = 0.25f;
-    private bool facingRight = true;
+    [SerializeField] private Transform _groundCheck;
+    [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private Transform _wallCheck;
+    [SerializeField] private LayerMask _wallLayer;
+
+    private bool _doubleJump;
+    private bool _facingRight = true;
+    private bool _isWallSliding;
+    [SerializeField] private float _wallSlidingSpeed=2f;
+
+    private BoxCollider2D _boxCollider;
+    private const float _isGroundedRayLength = 0.25f;
    
-    Rigidbody2D rb;
-    public LayerMask groundLayer;
-    private int jumpCounterValue = 0;
-    private int jumpCounter;
+    private Rigidbody2D _rb;
 
-    private MovementStates currentMovementState;
-    private MovementStates previousMovementState;
+    private MovementStates _currentMovementState;
+    private MovementStates _previousMovementState;
     public enum MovementStates
     {
         Idle,
@@ -32,13 +36,12 @@ public class PlayerMovement : MonoBehaviour
     }
     void Start()
     {
-        jumpCounter = jumpCounterValue;
-        currentMovementState = MovementStates.Idle;
+        _currentMovementState = MovementStates.Idle;
     }
     void Awake() 
     {
-        rb=GetComponent<Rigidbody2D>();
-        boxCollider=GetComponent<BoxCollider2D>();
+        _rb=GetComponent<Rigidbody2D>();
+        _boxCollider=GetComponent<BoxCollider2D>();
     }
     void FixedUpdate()
     {
@@ -50,76 +53,59 @@ public class PlayerMovement : MonoBehaviour
         HandleJumping();
         FaceControl();
         SetCharacterState();
+        WallSlide();
     }
 
-    private void ControlSomething()
+    private void SetCharacterState() 
     {
-        Debug.Log("Jumping velocity"+rb.velocity.x);
-        Debug.Log("Double jump :"+ doubleJump);
-        Debug.Log("MovementState:" + currentMovementState);
-
-    }
-
-    void HandleJumping()
-    {
-        //first jump
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W)) && IsGrounded())
+        if(IsGrounded())
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingForce);
-            doubleJump = true;
-        }
-        //double jump condition
-        else if((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W))   && !IsGrounded() && doubleJump)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingForce*1.25f);
-            doubleJump = false;
-        }
-    }
-
-    bool IsGrounded()
-    {
-        Debug.Log("IsGrounded Funct");
-        RaycastHit2D raycastHit2D = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, isGroundedRayLength, groundLayer);
-        Color rayColor;
-        if (raycastHit2D.collider != null)
-        {
-            rayColor = Color.green;
+            if(_rb.velocity.x==0)
+            {
+                _currentMovementState = MovementStates.Idle;
+            }
+            else
+            {
+                _currentMovementState = MovementStates.Walking;
+            }
         }
         else
         {
-            rayColor = Color.red;
+            _currentMovementState = MovementStates.Jumping;
         }
-
-        Debug.DrawRay(boxCollider.bounds.center, Vector2.down * (boxCollider.bounds.extents.y + isGroundedRayLength), rayColor);
-        if (raycastHit2D.collider != null)
-        {
-            Debug.Log("We are colliding with" + raycastHit2D.collider);
-        }
-        return raycastHit2D.collider != null;
     }
+    private void ControlSomething()
+    {
+        Debug.Log("Sliding velocity : "+_rb.velocity.y);
+        Debug.Log("isWallSliding :" + _isWallSliding);
+        Debug.Log("MovementState:" + _currentMovementState);
+        Debug.Log("Is walled : " + IsWalled());
+        Debug.Log("Is grounded : " + IsGrounded());
 
-    void HandleMovement()
+    }
+    private void HandleMovement()
     {
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        horizontalInput = Input.GetAxis("Horizontal") ;
+        _horizontalInput = Input.GetAxis("Horizontal") ;
+        _rb.velocity = new Vector2(_horizontalInput * _movingSpeed, _rb.velocity.y);
 
-        if(Input.GetKey(KeyCode.D))//Walking right
-        {
-            rb.velocity = new Vector2(horizontalInput * movingSpeed, rb.velocity.y);
-        }
-        else if(Input.GetKey(KeyCode.A))//Walking left
-        {
-            rb.velocity=new Vector2(horizontalInput*movingSpeed,rb.velocity.y);
-        }
+        //if (Input.GetKeyDown(KeyCode.RightArrow))//Walking right
+        //{
+        //    _rb.velocity = new Vector2(_horizontalInput * _movingSpeed, _rb.velocity.y);
+        //}
+        //else if(Input.GetKeyDown(KeyCode.LeftArrow))//Walking left
+        //{
+        //    _rb.velocity=new Vector2(_horizontalInput*_movingSpeed,_rb.velocity.y);
+        //}
     }
-    void FaceControl()
+    private void FaceControl()
     {
-        if (horizontalInput > 0&&!facingRight) //Going right
+        if (_horizontalInput > 0&&!_facingRight) //Going right
         {
             FlipFace();
         }
-        else if (horizontalInput< 0&&facingRight) //Going left
+        else if (_horizontalInput< 0&&_facingRight) //Going left
         {
             FlipFace();
         }
@@ -129,25 +115,59 @@ public class PlayerMovement : MonoBehaviour
         Vector3 flip = transform.localScale;
         flip.x *= -1;
         transform.localScale = flip;
-        facingRight = !facingRight;
+        _facingRight = !_facingRight;
     }
-
-    private void SetCharacterState() 
+    private void HandleJumping()
     {
-        if(IsGrounded())
+        //first jump
+        if (Input.GetKeyDown(KeyCode.Space)  && IsGrounded())
         {
-            if(rb.velocity.x==0)
-            {
-                currentMovementState = MovementStates.Idle;
-            }
-            else
-            {
-                currentMovementState = MovementStates.Walking;
-            }
+            _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce);
+            _doubleJump = true;
+        }
+        //double jump condition
+        else if(Input.GetKeyDown(KeyCode.Space)    && !IsGrounded() && _doubleJump)
+        {
+            _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce*1.25f);
+            _doubleJump = false;
+        }
+    }
+    private bool IsGrounded()
+    {
+        //Debug.Log("IsGrounded Funct");
+        //RaycastHit2D raycastHit2D = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, isGroundedRayLength, groundLayer);
+        //Color rayColor;
+        //if (raycastHit2D.collider != null)
+        //{
+        //    rayColor = Color.green;
+        //}
+        //else
+        //{
+        //    rayColor = Color.red;
+        //}
+
+        //Debug.DrawRay(boxCollider.bounds.center, Vector2.down * (boxCollider.bounds.extents.y + isGroundedRayLength), rayColor);
+        //if (raycastHit2D.collider != null)
+        //{
+        //    Debug.Log("We are colliding with" + raycastHit2D.collider);
+        //}
+        //return raycastHit2D.collider != null;
+        return Physics2D.OverlapCircle(_groundCheck.position, 0.2f, _groundLayer);
+    }
+    private bool IsWalled()
+    {
+        return Physics2D.OverlapCircle(_wallCheck.position,0.2f,_wallLayer);
+    }
+    private void WallSlide()
+    {
+        if(IsWalled()&&!IsGrounded()&&_horizontalInput!=0f)
+        {
+            _isWallSliding = true;
+            _rb.velocity = new Vector2(_rb.velocity.x, Mathf.Clamp(_rb.velocity.y,-_wallSlidingSpeed,float.MaxValue));
         }
         else
         {
-            currentMovementState = MovementStates.Jumping;
+            _isWallSliding = false;
         }
     }
 }
