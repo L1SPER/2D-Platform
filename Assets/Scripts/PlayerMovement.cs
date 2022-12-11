@@ -6,60 +6,80 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float movingForce;
-    [SerializeField] float runningForce;
+    [SerializeField] float movingSpeed;
     [SerializeField] float jumpingForce;
-
-    //bool isGrounded;
-    private float verticalInput;
+    private bool doubleJump;
+    
     private float horizontalInput;
 
-    private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
     float isGroundedRayLength = 0.25f;
     private bool facingRight = true;
-        
+   
     Rigidbody2D rb;
-    public LayerMask platformLayerMask;
+    public LayerMask groundLayer;
+    private int jumpCounterValue = 0;
+    private int jumpCounter;
 
-    // Start is called before the first frame update
+    private MovementStates currentMovementState;
+    private MovementStates previousMovementState;
+    public enum MovementStates
+    {
+        Idle,
+        Walking,
+        Attacking,
+        Jumping
+    }
     void Start()
     {
-        
+        jumpCounter = jumpCounterValue;
+        currentMovementState = MovementStates.Idle;
     }
     void Awake() 
     {
         rb=GetComponent<Rigidbody2D>();
-        spriteRenderer=GetComponent<SpriteRenderer>();
+        boxCollider=GetComponent<BoxCollider2D>();
     }
     void FixedUpdate()
     {
-        //HandleMovement();
+        HandleMovement();
     }
-    // Update is called once per frame
     void Update()
     {
-        HandleMovement();
+        ControlSomething();
         HandleJumping();
         FaceControl();
-        LimitSpeed();
-        //Debug.Log("Facing "+facingRight);
-        Debug.Log("Velocity: "+rb.velocity.x);
-        
+        SetCharacterState();
+    }
+
+    private void ControlSomething()
+    {
+        Debug.Log("Jumping velocity"+rb.velocity.x);
+        Debug.Log("Double jump :"+ doubleJump);
+        Debug.Log("MovementState:" + currentMovementState);
+
     }
 
     void HandleJumping()
     {
-        if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W))&& IsGrounded())
+        //first jump
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W)) && IsGrounded())
         {
-            rb.velocity = Vector2.up * jumpingForce;
+            rb.velocity = new Vector2(rb.velocity.x, jumpingForce);
+            doubleJump = true;
+        }
+        //double jump condition
+        else if((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W))   && !IsGrounded() && doubleJump)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpingForce*1.25f);
+            doubleJump = false;
         }
     }
 
     bool IsGrounded()
     {
         Debug.Log("IsGrounded Funct");
-        RaycastHit2D raycastHit2D = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, isGroundedRayLength, platformLayerMask);
+        RaycastHit2D raycastHit2D = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, isGroundedRayLength, groundLayer);
         Color rayColor;
         if (raycastHit2D.collider != null)
         {
@@ -82,46 +102,26 @@ public class PlayerMovement : MonoBehaviour
     {
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        horizontalInput = Input.GetAxis("Horizontal")*movingForce* Time.deltaTime;
-        verticalInput = Input.GetAxis("Vertical") * movingForce * Time.deltaTime;
+        horizontalInput = Input.GetAxis("Horizontal") ;
 
-        if(horizontalInput > 0) //Going right
+        if(Input.GetKey(KeyCode.D))//Walking right
         {
-            rb.AddForce(new Vector2(horizontalInput, 0));
+            rb.velocity = new Vector2(horizontalInput * movingSpeed, rb.velocity.y);
         }
-        else if(horizontalInput < 0) //Going left
+        else if(Input.GetKey(KeyCode.A))//Walking left
         {
-            rb.AddForce(new Vector2(horizontalInput, 0));
+            rb.velocity=new Vector2(horizontalInput*movingSpeed,rb.velocity.y);
         }
     }
     void FaceControl()
     {
-        if (verticalInput > 0&&!facingRight) //Going right
+        if (horizontalInput > 0&&!facingRight) //Going right
         {
             FlipFace();
         }
-        else if (verticalInput < 0&&facingRight) //Going left
+        else if (horizontalInput< 0&&facingRight) //Going left
         {
             FlipFace();
-        }
-    }
-    void LimitSpeed()
-    {
-        if(horizontalInput>10&&Input.GetKey(KeyCode.LeftShift))
-        {
-            horizontalInput = 10;
-        }
-        else if(horizontalInput>5)
-        {
-            horizontalInput = 5;
-        }
-        if(horizontalInput<-10&&Input.GetKey(KeyCode.LeftShift))
-        {
-            horizontalInput = -10;
-        }
-        else if(horizontalInput<-5)
-        {
-            horizontalInput = -5;
         }
     }
     private void FlipFace()
@@ -130,5 +130,24 @@ public class PlayerMovement : MonoBehaviour
         flip.x *= -1;
         transform.localScale = flip;
         facingRight = !facingRight;
+    }
+
+    private void SetCharacterState() 
+    {
+        if(IsGrounded())
+        {
+            if(rb.velocity.x==0)
+            {
+                currentMovementState = MovementStates.Idle;
+            }
+            else
+            {
+                currentMovementState = MovementStates.Walking;
+            }
+        }
+        else
+        {
+            currentMovementState = MovementStates.Jumping;
+        }
     }
 }
