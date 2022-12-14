@@ -7,22 +7,28 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private float _horizontalInput;
-    private float _movingSpeed=7.5f;
-    private float _jumpingForce=5f;
+    private float _movingSpeed = 7.5f;
+    private float _jumpingForce = 5f;
 
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private Transform _wallCheck;
     [SerializeField] private LayerMask _wallLayer;
 
-    private bool _doubleJump;
+    private bool _doubleJumping;
+    private float _doubleJumpingMultiplier = 1.25f;
     private bool _facingRight = true;
     private bool _isWallSliding;
-    [SerializeField] private float _wallSlidingSpeed=2f;
+    private float _wallSlidingSpeed = 3.5f;
+
+    private bool _wallJumping;
+    [SerializeField]  private float _xWallForce;
+    private float _wallJumpDuration = 0.2f;
+    [SerializeField] private float _wallJumpingMultiplier = 5f;
 
     private BoxCollider2D _boxCollider;
     private const float _isGroundedRayLength = 0.25f;
-   
+
     private Rigidbody2D _rb;
 
     private MovementStates _currentMovementState;
@@ -38,29 +44,30 @@ public class PlayerMovement : MonoBehaviour
     {
         _currentMovementState = MovementStates.Idle;
     }
-    void Awake() 
+    void Awake()
     {
-        _rb=GetComponent<Rigidbody2D>();
-        _boxCollider=GetComponent<BoxCollider2D>();
+        _rb = GetComponent<Rigidbody2D>();
+        _boxCollider = GetComponent<BoxCollider2D>();
     }
     void FixedUpdate()
     {
         HandleMovement();
+        WallSlide();
     }
     void Update()
     {
-        ControlSomething();
-        HandleJumping();
-        FaceControl();
         SetCharacterState();
-        WallSlide();
+        ControlSomething();
+        FaceControl();
+        HandleJumping();
+        WallJump();
     }
 
-    private void SetCharacterState() 
+    private void SetCharacterState()
     {
-        if(IsGrounded())
+        if (IsGrounded())
         {
-            if(_rb.velocity.x==0)
+            if (_rb.velocity.x == 0)
             {
                 _currentMovementState = MovementStates.Idle;
             }
@@ -76,19 +83,18 @@ public class PlayerMovement : MonoBehaviour
     }
     private void ControlSomething()
     {
-        Debug.Log("Sliding velocity : "+_rb.velocity.y);
-        Debug.Log("isWallSliding :" + _isWallSliding);
-        Debug.Log("MovementState:" + _currentMovementState);
-        Debug.Log("Is walled : " + IsWalled());
-        Debug.Log("Is grounded : " + IsGrounded());
-
+        Debug.Log("rb : " + _rb.velocity.x);
+        Debug.Log("wall jumping : " + _wallJumping); 
+        Debug.Log("wall slide : " + _isWallSliding); 
     }
     private void HandleMovement()
     {
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        _horizontalInput = Input.GetAxis("Horizontal") ;
+        _horizontalInput = Input.GetAxis("Horizontal");
         _rb.velocity = new Vector2(_horizontalInput * _movingSpeed, _rb.velocity.y);
+
+       
 
         //if (Input.GetKeyDown(KeyCode.RightArrow))//Walking right
         //{
@@ -101,11 +107,11 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FaceControl()
     {
-        if (_horizontalInput > 0&&!_facingRight) //Going right
+        if (_horizontalInput > 0 && !_facingRight) //Going right
         {
             FlipFace();
         }
-        else if (_horizontalInput< 0&&_facingRight) //Going left
+        else if (_horizontalInput < 0 && _facingRight) //Going left
         {
             FlipFace();
         }
@@ -120,17 +126,26 @@ public class PlayerMovement : MonoBehaviour
     private void HandleJumping()
     {
         //first jump
-        if (Input.GetKeyDown(KeyCode.Space)  && IsGrounded())
+        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
         {
             _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce);
-            _doubleJump = true;
+            _doubleJumping = true;
         }
         //double jump condition
-        else if(Input.GetKeyDown(KeyCode.Space)    && !IsGrounded() && _doubleJump)
+        else if (Input.GetKeyDown(KeyCode.Space) && !IsGrounded() && _doubleJumping)
         {
-            _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce*1.25f);
-            _doubleJump = false;
+            _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce * _doubleJumpingMultiplier);
+            _doubleJumping = false;
         }
+        //else if (_isWallSliding)
+        //{
+        //    if(Input.GetKeyDown(KeyCode.Space))
+        //    {
+        //        _wallJumping = true;
+        //        _rb.velocity = new Vector2(-_rb.velocity.x* _wallJumpingMultiplier, _jumpingForce);
+        //        Invoke("StopWallJump", _wallJumpDuration);
+        //    }
+        //}
     }
     private bool IsGrounded()
     {
@@ -156,18 +171,32 @@ public class PlayerMovement : MonoBehaviour
     }
     private bool IsWalled()
     {
-        return Physics2D.OverlapCircle(_wallCheck.position,0.2f,_wallLayer);
+        return Physics2D.OverlapCircle(_wallCheck.position, 0.2f, _wallLayer);
     }
     private void WallSlide()
     {
-        if(IsWalled()&&!IsGrounded()&&_horizontalInput!=0f)
-        {
+        if (IsWalled() && !IsGrounded() && _horizontalInput != 0f)
             _isWallSliding = true;
-            _rb.velocity = new Vector2(_rb.velocity.x, Mathf.Clamp(_rb.velocity.y,-_wallSlidingSpeed,float.MaxValue));
-        }
         else
-        {
             _isWallSliding = false;
+
+        if(_isWallSliding)
+            _rb.velocity = new Vector2(_rb.velocity.x, -_wallSlidingSpeed); //Mathf.Clamp(_rb.velocity.y,-_wallSlidingSpeed,float.MaxValue));
+    }
+    private void WallJump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && _isWallSliding)
+        {
+            _wallJumping = true;
+            Invoke("StopWallJump", _wallJumpDuration);
         }
+
+        if(_wallJumping)
+            _rb.velocity = new Vector2(_xWallForce*-_horizontalInput, _jumpingForce); 
+
+    }
+    private void StopWallJump()
+    {
+        _wallJumping = false;
     }
 }
