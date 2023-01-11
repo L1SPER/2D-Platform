@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     //Components
     Rigidbody2D _rb;
     Animator _animator;
-
+    [SerializeField] BoxCollider2D boxCollider;
     //Scripts
     PlayerAttack _playerAttack;
 
@@ -293,7 +293,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void StartAttack()
     {
-        if(Input.GetKeyDown(attackButton)) 
+        if(Input.GetKeyDown(attackButton)&&IsGrounded()) 
         {
             _playerAttack.Attack();
             _currentMovementState = MovementStates.Attacking;
@@ -308,19 +308,26 @@ public class PlayerController : MonoBehaviour
     {
         _isAttacking= false;
     }
-
+    /// <summary>
+    /// Handles rolling mechanism
+    /// </summary>
     private void HandleRolling()
     {
-        if (Input.GetKeyDown(rollButton)&&!_isRolling)
+        if (Input.GetKeyDown(rollButton)&&!_isRolling&&IsGrounded()&&_rb.velocity.x!=0)
         {
             Invoke("StopRolling", 1f);
             _rb.velocity=new Vector2(_rollingSpeed, _rb.velocity.y);
             _animator.SetTrigger(Roll);
             _isRolling = true;
+            boxCollider.enabled= false;
         }
     }
+    /// <summary>
+    /// Stops rolling by making _isRolling bool false
+    /// </summary>
     private void StopRolling()
     {
         _isRolling = false;
+        boxCollider.enabled = true;
     }
 }
