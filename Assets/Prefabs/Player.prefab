@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 3024011170957188590}
   - component: {fileID: 3024011170957188585}
   - component: {fileID: 3024011170957188584}
-  - component: {fileID: 1895871455}
+  - component: {fileID: 1895871450}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -67,6 +67,7 @@ Transform:
   m_Children:
   - {fileID: 3024011169726086531}
   - {fileID: 3024011171484754242}
+  - {fileID: 911275870601380504}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -135,7 +136,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.2717961, y: 0.02940321}
+  m_Offset: {x: 0.27, y: 0.03}
   m_SpriteTilingProperty:
     border: {x: 0.4375, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -164,7 +165,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: a5e189d97e68d744b90845188141f341, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
@@ -205,13 +206,10 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 320
-  _wallCheck: {fileID: 3024011171484754242}
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  _xWallForce: 5
-  _wallJumpingMultiplier: 1
---- !u!114 &1895871455
+--- !u!114 &1895871450
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -220,7 +218,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3024011170957188578}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9ad2211bdcad7549828a8867887dc91, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ad9111d9a0c856448e38bc7752e549b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3024011171484754243
@@ -253,4 +251,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3024011170957188588}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9047960590476559451
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 911275870601380504}
+  m_Layer: 0
+  m_Name: MeleeHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &911275870601380504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9047960590476559451}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.108, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3024011170957188588}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
