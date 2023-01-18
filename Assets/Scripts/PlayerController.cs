@@ -170,6 +170,11 @@ public class PlayerController : MonoBehaviour
 
         _horizontalInput = Input.GetAxis("Horizontal");
         _rb.velocity = new Vector2(_horizontalInput * _movingSpeed, _rb.velocity.y);
+
+        if(_horizontalInput!= 0&&IsGrounded())//Fixed walk sound due to player input
+        {
+            FindObjectOfType<AudioManager>().Play("PlayerWalk");
+        }
     }
     /// <summary>
     /// Controls direction of face according to speed of player 
@@ -200,17 +205,19 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void HandleJumping()
     {
-        //first jump
+        //First jump
         if (Input.GetKeyDown(jumpButton) && IsGrounded())
         {
             _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce);
             _doubleJumping = true;
+            FindObjectOfType<AudioManager>().Play("PlayerJump");
         }
         //double jump condition
         else if (Input.GetKeyDown(jumpButton) && !IsGrounded() && _doubleJumping)
         {
             _rb.velocity = new Vector2(_rb.velocity.x, _jumpingForce * _doubleJumpingMultiplier);
             _doubleJumping = false;
+            FindObjectOfType<AudioManager>().Play("PlayerJump");
         }
     }
     /// <summary>
@@ -298,6 +305,7 @@ public class PlayerController : MonoBehaviour
             _playerAttack.Attack();
             _currentMovementState = MovementStates.Attacking;
             _isAttacking= true;
+            FindObjectOfType<AudioManager>().Play("PlayerAttack");
             Invoke("StopAttacking", _attackingTime);
         }
     }

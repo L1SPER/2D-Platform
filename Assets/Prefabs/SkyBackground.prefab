@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2975325023131373497}
   - component: {fileID: 2975325023131373496}
-  - component: {fileID: 2975325023131373503}
+  - component: {fileID: 7308580998120735632}
   m_Layer: 0
   m_Name: SkyBackground
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2975325023131373503
+--- !u!114 &7308580998120735632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,6 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2975325023131373502}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08e9f6664eb1d444fa6a95b9d9b05337, type: 3}
+  m_Script: {fileID: 11500000, guid: 6478d068242f89143befcef69abfa58f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Player: {fileID: 0}

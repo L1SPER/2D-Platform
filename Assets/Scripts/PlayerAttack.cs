@@ -48,6 +48,7 @@ public class PlayerAttack : MonoBehaviour
             Invoke("ResetAttack", _resetAttackTime);
             _comboStarted = true;
             _attackIndex++;
+           
             _animator.SetTrigger(attack1);
             _attackTime = _timer;
         }

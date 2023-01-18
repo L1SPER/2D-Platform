@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
-    [SerializeField] GameObject Player;
+    [SerializeField] GameObject _player;
     void LateUpdate()
     {
-        this.transform.position=Player.transform.position;
+        this.transform.position=_player.transform.position;
     }
 }
