@@ -16,10 +16,7 @@ public class AudioManager : MonoBehaviour
             sound.audioSource.loop=sound.loop;
         }
     }
-    private void Start()
-    {
-        Play("Theme");
-    }
+   
     /// <summary>
     /// Plays sounds by name
     /// </summary>

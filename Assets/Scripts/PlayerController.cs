@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     //Components
     Rigidbody2D _rb;
     Animator _animator;
-    [SerializeField] BoxCollider2D boxCollider;
+    BoxCollider2D boxCollider;
     //Scripts
     PlayerAttack _playerAttack;
 
@@ -81,6 +81,7 @@ public class PlayerController : MonoBehaviour
         _animator=GetComponent<Animator>();
         _wallCheck = transform.Find("WallCheck");
         _playerAttack=GetComponent<PlayerAttack>();
+        boxCollider=GetComponent<BoxCollider2D>();
     }
     void FixedUpdate()
     {

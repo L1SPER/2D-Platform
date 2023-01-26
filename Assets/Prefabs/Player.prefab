@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 3189003898912873444}
   - component: {fileID: 411775923239437837}
   - component: {fileID: 3236618624529532232}
+  - component: {fileID: 682497531524248278}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -69,7 +70,6 @@ Transform:
   - {fileID: 411775922293642685}
   - {fileID: 411775924017580412}
   - {fileID: 2370053068396800678}
-  - {fileID: 411775923540053393}
   - {fileID: 411775924016848851}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -186,7 +186,7 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  boxCollider: {fileID: 411775923540053394}
+  boxCollider: {fileID: 0}
 --- !u!114 &3189003898912873444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,49 +310,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &411775923540053395
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 411775923540053393}
-  - component: {fileID: 411775923540053394}
-  m_Layer: 0
-  m_Name: Box Collider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &411775923540053393
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 411775923540053395}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 411775923491075538}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &411775923540053394
+--- !u!61 &682497531524248278
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 411775923540053395}
+  m_GameObject: {fileID: 411775923491075548}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.27, y: 0.03}
@@ -398,7 +366,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 411775923491075538}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &411775924016848850
 CircleCollider2D:
