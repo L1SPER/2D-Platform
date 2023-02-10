@@ -4,18 +4,8 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    private int _health;
-    private int _currentHealth;
-    public virtual void TakeDamage(int damage)
+    public virtual void CheckIfWeDead() 
     {
-        _currentHealth -= damage;
-        if (_currentHealth < 0)
-        {
-            _currentHealth = 0;
-        }
-    }
-    public virtual void Die()
-    {
-        Destroy(gameObject);
+        Debug.Log("Checking if we are dead");
     }
 }

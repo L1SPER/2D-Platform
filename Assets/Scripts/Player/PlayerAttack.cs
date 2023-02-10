@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    //56 düzeltilcek.
     private int _attackIndex;
     private float _timer;
     private float _attackTime;
@@ -13,6 +12,11 @@ public class PlayerAttack : MonoBehaviour
     private bool _comboStarted;
     private float _resetAttackTime = 1f;
     private Animator _animator;
+
+    [SerializeField] private int _attackDamage = 1;
+    [SerializeField] private float _attackRange;
+    [SerializeField] GameObject _attackPoint;
+    [SerializeField] LayerMask _targetLayer;
 
     readonly int attack1 = Animator.StringToHash("attack1");
     readonly int attack2 = Animator.StringToHash("attack2");
@@ -42,13 +46,34 @@ public class PlayerAttack : MonoBehaviour
     /// </summary>
     public void Attack()
     {
+        CheckHit();
+
+        StartCombo();
+    }
+
+    private void CheckHit()
+    {
+        Collider2D[] hitResults = Physics2D.OverlapCircleAll(_attackPoint.transform.position, _attackRange, _targetLayer);
+        if (hitResults == null)
+            return;
+
+        foreach (Collider2D hit in hitResults)
+        {
+            if (hit.GetComponent<IDamageable<int>>() != null)
+            {
+                hit.GetComponent<IDamageable<int>>().TakeDamage(_attackDamage);
+            }
+        }
+    }
+    private void StartCombo()
+    {
         //First attack started
-        if(!_comboStarted) 
+        if (!_comboStarted)
         {
             Invoke("ResetAttack", _resetAttackTime);
             _comboStarted = true;
             _attackIndex++;
-           
+
             _animator.SetTrigger(attack1);
             _attackTime = _timer;
         }
@@ -56,17 +81,18 @@ public class PlayerAttack : MonoBehaviour
         else
         {
             _comboTime = _timer;
-            if (_comboTime < _attackTime + 0.3f && _comboTime > _attackTime  && _attackIndex==1)
+            if (_comboTime < _attackTime + 0.3f && _comboTime > _attackTime && _attackIndex == 1)
             {
                 _attackIndex++;
                 _animator.SetTrigger(attack2);
             }
-            else if(_comboTime < _attackTime + 0.7f && _comboTime > _attackTime && _attackIndex == 2)
+            else if (_comboTime < _attackTime + 0.7f && _comboTime > _attackTime && _attackIndex == 2)
             {
                 _animator.SetTrigger(attack3);
             }
         }
     }
+
     /// <summary>
     /// Function that to reattack, _attackIndex variable has to be 0 and _comboStarted bool has to be false
     /// </summary>

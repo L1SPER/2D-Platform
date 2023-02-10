@@ -46,8 +46,10 @@ GameObject:
   - component: {fileID: 411775923491075542}
   - component: {fileID: 3189003898912873444}
   - component: {fileID: 411775923239437837}
+  - component: {fileID: 8840664554238819230}
   - component: {fileID: 3236618624529532232}
   - component: {fileID: 682497531524248278}
+  - component: {fileID: 2536925177817552963}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -186,7 +188,6 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  boxCollider: {fileID: 0}
 --- !u!114 &3189003898912873444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +215,18 @@ MonoBehaviour:
   _maxHealth: 3
   _currentHealth: 3
   healthBar: {fileID: 0}
+--- !u!114 &8840664554238819230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411775923491075548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b184bc476e5c4d4498d7fb1acf39cdf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!82 &3236618624529532232
 AudioSource:
   m_ObjectHideFlags: 0
@@ -336,6 +349,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.90625024, y: 1.1911936}
   m_EdgeRadius: 0
+--- !u!114 &2536925177817552963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411775923491075548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b184bc476e5c4d4498d7fb1acf39cdf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &411775924016848860
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Block
+  - Coin
+  - Key
+  - Teleport
   layers:
   - Default
   - TransparentFX
@@ -15,7 +18,7 @@ TagManager:
   - Block
   - Wall
   - Environment
-  - 
+  - Enemy
   - 
   - 
   - 
