@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Serialization
     private float _horizontalInput;
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
@@ -27,7 +28,7 @@ public class PlayerController : MonoBehaviour
     Animator _animator;
     BoxCollider2D boxCollider;
     //Scripts
-    PlayerAttack _playerAttack;
+    PlayerCombat _playerCombat;
 
     //MovementStates
     private MovementStates _currentMovementState;
@@ -35,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     //These constants are used to ensure character's movement
     private const float _isGroundedRayLength = 0.25f;
-    private  float _wallJumpingMultiplier = 5f;
+    private float _wallJumpingMultiplier = 5f;
     private const float _wallJumpDuration = 1f;
     private const float _wallSlidingSpeed = 3.5f;
     private const float _doubleJumpingMultiplier = 1.25f;
@@ -44,7 +45,7 @@ public class PlayerController : MonoBehaviour
     private const float _jumpingForce = 5f;
     private const float _attackingTime = 0.5f;
     private float _xWallForce;
-    
+
     //Parameters
     readonly int Idle = Animator.StringToHash("Idle");
     readonly int Walk = Animator.StringToHash("Walk");
@@ -52,7 +53,7 @@ public class PlayerController : MonoBehaviour
     readonly int Jump = Animator.StringToHash("Jump");
     readonly int yVelocity = Animator.StringToHash("yVelocity");
     readonly int isGrounded = Animator.StringToHash("isGrounded");
-    
+
     readonly int Block = Animator.StringToHash("Block");
     readonly int Roll = Animator.StringToHash("Roll");
     readonly int Hurt = Animator.StringToHash("Hurt");
@@ -71,6 +72,8 @@ public class PlayerController : MonoBehaviour
         Attacking,
         Jumping
     }
+    #endregion
+
     void Start()
     {
         _currentMovementState = MovementStates.Idle;
@@ -80,7 +83,7 @@ public class PlayerController : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _animator=GetComponent<Animator>();
         _wallCheck = transform.Find("WallCheck");
-        _playerAttack=GetComponent<PlayerAttack>();
+        _playerCombat=GetComponent<PlayerCombat>();
         boxCollider=GetComponent<BoxCollider2D>();
     }
     void FixedUpdate()
@@ -89,7 +92,7 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
-        ControlSomething();
+        //ControlSomething();
         FaceControl();
         HandleJumping();
         WallActions();
@@ -98,6 +101,9 @@ public class PlayerController : MonoBehaviour
         StartAttack();
         HandleRolling();
     }
+    #region Functions
+
+    
     /// <summary>
     /// Sets character states
     /// </summary>
@@ -182,11 +188,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void FaceControl()
     {
-        if (_horizontalInput > 0 && !_facingRight) //Going right
-        {
-            FlipFace();
-        }
-        else if (_horizontalInput < 0 && _facingRight) //Going left
+        if ((_horizontalInput > 0 && !_facingRight)||(_horizontalInput < 0 && _facingRight)) //Going right
         {
             FlipFace();
         }
@@ -303,7 +305,7 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetKeyDown(attackButton)&&IsGrounded()) 
         {
-            _playerAttack.Attack();
+            _playerCombat.Attack();
             _currentMovementState = MovementStates.Attacking;
             _isAttacking= true;
             FindObjectOfType<AudioManager>().Play("PlayerAttack");
@@ -339,4 +341,5 @@ public class PlayerController : MonoBehaviour
         _isRolling = false;
         boxCollider.enabled = true;
     }
+    #endregion
 }

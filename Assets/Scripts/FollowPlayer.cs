@@ -6,7 +6,8 @@ public class FollowPlayer : MonoBehaviour
 {
     [SerializeField] GameObject _player;
     void LateUpdate()
-    {
-        this.transform.position=_player.transform.position;
+    { 
+        if(_player)
+            this.transform.position=_player.transform.position;
     }
 }
