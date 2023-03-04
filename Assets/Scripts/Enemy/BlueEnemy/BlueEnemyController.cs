@@ -16,7 +16,6 @@ public class BlueEnemyController : MonoBehaviour
     int movingSpeed;
     float _distance = 0f;
     bool _lookingRight = false;
-    bool _isAttacking;
     readonly int Attack = Animator.StringToHash("Attack");
     readonly int MoveSpeed = Animator.StringToHash("MoveSpeed");
 
@@ -86,6 +85,7 @@ public class BlueEnemyController : MonoBehaviour
             case BlueEnemyStates.Idle:
                 break;
             case BlueEnemyStates.Run:
+                FindObjectOfType<AudioManager>().Play("EnemyWalk");
                 break;
             case BlueEnemyStates.Attack:
                 _animator.SetTrigger(Attack);

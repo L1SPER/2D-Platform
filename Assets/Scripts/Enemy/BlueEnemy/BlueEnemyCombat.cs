@@ -34,6 +34,7 @@ public class BlueEnemyCombat : MonoBehaviour
     {
         if (_isAttacking)
             yield break;
+        FindObjectOfType<AudioManager>().Play("EnemyAttack");
         _isAttacking = true;
         yield return new WaitForSeconds(1f);
         _isAttacking= false;

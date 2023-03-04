@@ -6,13 +6,14 @@ using UnityEngine;
 public class PinkEnemyController : MonoBehaviour
 {
     [SerializeField] GameObject _player;
+    [SerializeField] float _attackDistance = 10f;
+    
     float _distance = 0f;
-    bool _lookingRight = false;
-    [SerializeField] float _attackDistance = 5f;
-    Animator _animator;
+    public bool _lookingRight = false;
     bool _isAttacking;
+    Animator _animator;
     readonly int Attack = Animator.StringToHash("Attack");
-
+    PinkEnemyCombat _pinkEnemyCombat;
 
     public enum PinkEnemyStates
     {
@@ -23,6 +24,7 @@ public class PinkEnemyController : MonoBehaviour
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+        _pinkEnemyCombat=GetComponent<PinkEnemyCombat>();
     }
     private void Update()
     {
@@ -47,6 +49,7 @@ public class PinkEnemyController : MonoBehaviour
         else if(_attackDistance > Mathf.Abs(_distance))
         {
             _currentMovementState= PinkEnemyStates.Attack;
+            _pinkEnemyCombat.Shoot();
         }
     }
     private void PlayAnimationsBasedOnState()

@@ -33,7 +33,8 @@ public class EnemyHealth : Health,IDamageable<int>
             _currentHealth -= damage;
         healthBar.SetHealth(_currentHealth);
         CheckIfWeDead();
-        _animator.SetTrigger("Hurt");
+        if(_currentHealth>0)
+            _animator.SetTrigger("Hurt");
         StartCoroutine(UntouchableActive());
     }
     /// <summary>
@@ -59,6 +60,7 @@ public class EnemyHealth : Health,IDamageable<int>
         {
             _currentHealth = 0;
             _animator.SetBool("Death", true);
+            FindObjectOfType<AudioManager>().Play("EnemyDie");
             Destroy(gameObject,1f);
         }
     }
